@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import { sample, range } from "../../utils";
 import { WORDS } from "../../data";
 import { checkGuess } from "../../game-helpers";
-
-// Pick a random word on every page load.
 const answer = sample(WORDS);
-// To make debugging easier, we'll log the solution in the console.
 console.info({ answer });
-//  {r * 5 + c + 1}
-
 function Game() {
   const [gameState, setGameState] = useState("");
   const [attempt, setAttempt] = useState(1);
@@ -20,7 +15,6 @@ function Game() {
     setGuess("");
     setAttempt(attempt + 1);
     setAllGuesses([...allGuesses, guess]);
-    console.log(answer);
     checkWin();
   }
 
@@ -69,11 +63,15 @@ function Game() {
             <>
               <p>You Win! 🥳</p>
               <p>Guessed it in {attempt - 1} attempts</p>
+              <button onClick={(e) => window.location.reload()}>Restart</button>
             </>
           ) : (
             <>
               <p>You Lose ☹️</p>
-              <p>Try Again!</p>
+              <p>The correct word is {answer}</p>
+              <button onClick={(e) => window.location.reload()}>
+                Try Again
+              </button>
             </>
           )}
         </div>
