@@ -5,7 +5,7 @@ html {
   overflow-y: scroll;
 
   --game-spacing: 8px;
-  --header-height: 4rem;
+  --header-height: 5rem;
 
   --color-correct: #538d4e;
   --color-present: #b59f3b;
@@ -23,6 +23,18 @@ html {
 */
 body {
   font-family: sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121213;
+    color: #ffffff;
+  }
+
+  input {
+    background-color: #121213;
+    color: white;
+  }
 }
 
 @media (max-height: 600px) {
@@ -50,8 +62,7 @@ button {
 header {
   display: flex;
   height: var(--header-height);
-  border-bottom: 1px solid var(--color-gray-700);
-  color: var(--color-gray-300);
+  border-bottom: 1px solid var(--color-gray-300);
 }
 
 header .side {
@@ -109,9 +120,11 @@ h1 {
   display: grid;
   place-content: center;
   aspect-ratio: 1 / 1;
-  border: 2px solid var(--color-gray-700);
+  border: 2px solid #3a3a3c;
   border-radius: var(--radius);
+  font-weight: bold;
   font-size: 2rem;
+  user-select: none;
 }
 
 /*
@@ -151,6 +164,7 @@ h1 {
   display: flex;
   flex-direction: column;
   width: max-content;
+  padding-top: 2rem;
   gap: 8px;
   height: 6.75rem;
 }

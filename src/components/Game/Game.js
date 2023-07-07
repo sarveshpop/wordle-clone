@@ -51,8 +51,7 @@ function Game() {
         </div>
       ))}
       <form className="guess-input-wrapper" onSubmit={(e) => handleSubmit(e)}>
-        <label htmlFor="guessInput" />
-        <p>Guess: </p>
+        <label htmlFor="guessInput">Guess:</label>
         <input
           id="guessInput"
           value={guess}
