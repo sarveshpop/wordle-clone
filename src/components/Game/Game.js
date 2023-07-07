@@ -1,82 +1,66 @@
 import React, { useState } from "react";
-import { sample, range } from "../../utils";
+import { sample } from "../../utils";
 import { WORDS } from "../../data";
+import GuessResults from "../GuessResults/GuessResults";
+import GuessInput from "../GuessInput/GuessInput";
+import { NUM_OF_GUESSES_ALLOWED } from "../../constants";
+import Banner from "../Banner/Banner";
 import { checkGuess } from "../../game-helpers";
-const answer = sample(WORDS);
-console.info({ answer });
+import Keyboard from "../Keyboard/Keyboard";
+
 function Game() {
-  const [gameState, setGameState] = useState("");
-  const [attempt, setAttempt] = useState(1);
-  const [guess, setGuess] = useState("");
-  const [allGuesses, setAllGuesses] = useState([]);
+  const [answer, setAnswer] = React.useState(() => sample(WORDS));
+  const [gameState, setGameState] = useState("running"); // running | win | lose
+  const [currentGuess, setCurrentGuess] = useState("");
+  const [guesses, setGuesses] = useState([]);
 
   function handleSubmit(e) {
     e.preventDefault();
-    setGuess("");
-    setAttempt(attempt + 1);
-    setAllGuesses([...allGuesses, guess]);
-    checkWin();
+    handleSubmitGuess(currentGuess);
+    setCurrentGuess("");
   }
 
-  function checkWin() {
-    if (guess === answer) {
+  function handleSubmitGuess(currentGuess) {
+    const nextGuesses = [...guesses, currentGuess];
+    setGuesses(nextGuesses);
+    if (currentGuess === answer) {
       setGameState("win");
-    } else if (attempt === 6 && allGuesses[attempt - 1] !== answer) {
+    } else if (nextGuesses.length >= NUM_OF_GUESSES_ALLOWED) {
       setGameState("lose");
     }
   }
 
+  function handleRestart() {
+    const newAnswer = sample(WORDS);
+    setAnswer(newAnswer);
+    setGuesses([]);
+    setGameState("running");
+  }
+
+  const validatedGuesses = guesses.map((guess) => checkGuess(guess, answer));
+
   return (
     <>
-      {range(6).map((rows, r) => (
-        <div key={r} className={`row  `}>
-          {range(5).map((cols, c) => {
-            const cellResult = checkGuess(allGuesses[r], answer);
-            const cellStatus =
-              cellResult && cellResult[c] ? cellResult[c].status : "";
-            return (
-              <div key={c} className={`cell ${cellStatus}`}>
-                {allGuesses[r] && allGuesses[r][c] !== undefined
-                  ? allGuesses[r][c]
-                  : ""}
-              </div>
-            );
-          })}
-        </div>
-      ))}
-      <form className="guess-input-wrapper" onSubmit={(e) => handleSubmit(e)}>
-        <label htmlFor="guessInput">Guess:</label>
-        <input
-          id="guessInput"
-          value={guess}
-          maxLength={5}
-          minLength={5}
-          onChange={(e) => {
-            setGuess(e.target.value.toUpperCase());
-          }}
-          disabled={gameState === "win" ? true : false}
+      <GuessResults guesses={guesses} answer={answer} />
+      <GuessInput
+        gameState={gameState}
+        currentGuess={currentGuess}
+        setCurrentGuess={setCurrentGuess}
+        handleSubmit={handleSubmit}
+      />
+      <Keyboard
+        validatedGuesses={validatedGuesses}
+        currentGuess={currentGuess}
+        setCurrentGuess={setCurrentGuess}
+        handleSubmit={handleSubmit}
+      />
+      {gameState !== "running" && (
+        <Banner
+          gameState={gameState}
+          guesses={guesses}
+          answer={answer}
+          handleRestart={handleRestart}
         />
-      </form>
-      {gameState ? (
-        <div className={`${gameState} banner`}>
-          {gameState === "win" ? (
-            <>
-              <p>You Win! 🥳</p>
-              <p>Guessed it in {attempt - 1} attempts</p>
-              <button onClick={(e) => window.location.reload()}>Restart</button>
-            </>
-          ) : (
-            <>
-              <p>You Lose ☹️</p>
-              <p>The correct word is {answer}</p>
-              <button onClick={(e) => window.location.reload()}>
-                Try Again
-              </button>
-            </>
-          )}
-        </div>
-      ) : (
-        ""
       )}
     </>
   );
